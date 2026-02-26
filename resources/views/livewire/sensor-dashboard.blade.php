@@ -57,7 +57,7 @@
                         $batteryPct > 20 => 'var(--yellow)',
                         default          => 'var(--red)',
                     };
-                    $batteryLabel = $battery !== null ? $battery . '%' : 'N/A';
+                    $batteryLabel = $battery !== null ? $battery . ' %' : 'N/A';
 
                     $lq         = $reading?->linkquality ?? 0;
                     $lqPct      = round($lq / 255 * 100);
@@ -67,7 +67,7 @@
                         $lq >= 80  => 'var(--orange)',
                         default    => 'var(--red)',
                     };
-                    $lqLabel    = $lq > 0 ? "{$lq} (LQI)" : 'N/A';
+                    $lqLabel    = $lq > 0 ? "{$lq} LQI" : 'N/A';
                 @endphp
 
                 <div class="sensor-card {{ $online ? '' : 'offline' }}">
