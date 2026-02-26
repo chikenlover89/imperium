@@ -59,14 +59,15 @@
                     };
                     $batteryLabel = $battery !== null ? $battery . '%' : 'N/A';
 
-                    $lq   = $reading?->linkquality ?? 0;
-                    $bars = match(true) {
-                        $lq >= 200 => 4,
-                        $lq >= 140 => 3,
-                        $lq >= 80  => 2,
-                        $lq > 0    => 1,
-                        default    => 0,
+                    $lq         = $reading?->linkquality ?? 0;
+                    $lqPct      = round($lq / 255 * 100);
+                    $lqColor    = match(true) {
+                        $lq >= 200 => 'var(--green)',
+                        $lq >= 140 => 'var(--yellow)',
+                        $lq >= 80  => 'var(--orange)',
+                        default    => 'var(--red)',
                     };
+                    $lqLabel    = $lq > 0 ? "{$lq} (LQI)" : 'N/A';
                 @endphp
 
                 <div class="sensor-card {{ $online ? '' : 'offline' }}">
@@ -137,16 +138,16 @@
                             </div>
 
                             {{-- Signal --}}
-                            <div class="signal-row" style="flex-shrink:0;">
-                                <div class="signal-left">
-                                    <svg class="meter-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
-                                    <span class="meter-label">{{ $lq > 0 ? "{$lq} (LQI)" : '—' }}</span>
+                            <div class="meter-row" style="flex:1;">
+                                <div class="meter-header">
+                                    <div class="meter-left">
+                                        <svg class="meter-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+                                        <span class="meter-label">Signal</span>
+                                    </div>
+                                    <span class="meter-value" style="color: {{ $lqColor }}">{{ $lqLabel }}</span>
                                 </div>
-                                <div class="signal-bars" style="margin-left:6px;">
-                                    <div class="bar {{ $bars >= 1 ? 'lit' : '' }}" style="height:4px"></div>
-                                    <div class="bar {{ $bars >= 2 ? 'lit' : '' }}" style="height:6px"></div>
-                                    <div class="bar {{ $bars >= 3 ? 'lit' : '' }}" style="height:9px"></div>
-                                    <div class="bar {{ $bars >= 4 ? 'lit' : '' }}" style="height:12px"></div>
+                                <div class="meter-track">
+                                    <div class="meter-fill" style="width: {{ $lqPct }}%; background: {{ $lqColor }}"></div>
                                 </div>
                             </div>
 
