@@ -76,9 +76,13 @@
                             <span class="card-id">{{ $device->model ?? 'Node #' . $device->id }}</span>
                             <span class="card-name">{{ $device->friendly_name }}</span>
                         </div>
-                        <span class="status-chip {{ $online ? 'online' : 'offline' }}">
+                        <span class="status-chip {{ $online ? 'online' : 'offline' }}" wire:loading.remove>
                             <span class="status-dot"></span>
                             {{ $online ? 'Online' : 'Offline' }}
+                        </span>
+                        <span class="status-chip" wire:loading style="background:rgba(255,255,255,0.06);color:var(--text-2);">
+                            <span class="status-dot" style="background:transparent;border:1.5px solid var(--text-2);border-top-color:transparent;animation:spin 0.7s linear infinite;"></span>
+                            Syncing
                         </span>
                     </div>
 

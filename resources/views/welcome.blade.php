@@ -182,6 +182,8 @@
         .last-seen    { font-size: 11px; color: var(--text-3); text-align: right; }
         .last-updated { font-size: 11px; color: var(--text-3); }
 
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         @media (max-width: 900px) {
             .stat-grid { grid-template-columns: repeat(2, 1fr); }
         }
