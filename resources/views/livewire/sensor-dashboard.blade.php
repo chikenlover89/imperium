@@ -28,7 +28,12 @@
     {{-- Section header --}}
     <div class="section-header">
         <div class="section-title">Sensor Nodes</div>
-        <div class="last-updated">Updated {{ now()->format('H:i:s') }}</div>
+        <div class="last-updated"
+             x-data="{ t: '' }"
+             x-init="t = new Date().toLocaleTimeString()"
+             x-on:livewire:update.window="t = new Date().toLocaleTimeString()">
+            Updated <span x-text="t"></span>
+        </div>
     </div>
 
     {{-- Empty state --}}
