@@ -38,7 +38,6 @@
 
         .brand {
             display: flex; align-items: center; gap: 10px;
-            padding: 0 20px 28px;
         }
         .brand-icon {
             width: 36px; height: 36px; border-radius: 10px;
