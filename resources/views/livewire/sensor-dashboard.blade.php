@@ -206,7 +206,7 @@
                             $axisLabels[] = [
                                 'pct'   => round(($t - $startTime) / $duration * 100, 2),
                                 'gx'    => round(($t - $startTime) / $duration * $W,  1),
-                                'label' => now()->setTimestamp($t)->format('H'),
+                                'label' => now()->setTimestamp($t)->setTimezone('Europe/Riga')->format('H'),
                             ];
                         }
                     @endphp
