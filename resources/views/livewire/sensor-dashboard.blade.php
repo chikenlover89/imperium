@@ -170,24 +170,45 @@
 
                     {{-- Slide-out graph panel --}}
                     @php
-                        $h24 = $device->deviceReadings;
-                        $W = 300; $H = 44;
+                        $h24       = $device->deviceReadings;
+                        $W         = 300;
+                        $H         = 44;
+                        $endTime   = now()->timestamp;
+                        $startTime = $h24->isNotEmpty() ? $h24->first()->created_at->timestamp : $endTime;
+                        $duration  = max($endTime - $startTime, 1);
 
-                        $sparkPoints = function ($field, $color) use ($h24, $W, $H) {
-                            $vals = $h24->pluck($field)->filter()->values();
-                            if ($vals->count() < 2) return null;
-                            $min = $vals->min(); $max = $vals->max();
+                        // Timestamp-based sparkline: x maps to actual time, not index
+                        $sparkPoints = function ($field) use ($h24, $W, $H, $startTime, $duration) {
+                            $readings = $h24->whereNotNull($field)->values();
+                            if ($readings->count() < 2) return null;
+                            $vals  = $readings->pluck($field)->map(fn($v) => (float) $v);
+                            $min   = $vals->min();
+                            $max   = $vals->max();
                             $range = max($max - $min, 0.5);
-                            $n = $vals->count();
-                            $pts = $vals->map(fn($v, $i) =>
-                                round($i / ($n - 1) * $W, 1) . ',' . round($H - ($v - $min) / $range * ($H - 6) - 3, 1)
-                            )->implode(' ');
-                            $areaPoints = $pts . " {$W},{$H} 0,{$H}";
-                            return compact('pts', 'areaPoints', 'min', 'max', 'color');
+                            $pts   = $readings->map(function ($r) use ($field, $W, $H, $startTime, $duration, $min, $range) {
+                                $x = round(($r->created_at->timestamp - $startTime) / $duration * $W, 1);
+                                $y = round($H - ((float) $r->$field - $min) / $range * ($H - 6) - 3, 1);
+                                return "{$x},{$y}";
+                            })->implode(' ');
+                            $firstX     = round(($readings->first()->created_at->timestamp - $startTime) / $duration * $W, 1);
+                            $lastX      = round(($readings->last()->created_at->timestamp  - $startTime) / $duration * $W, 1);
+                            $areaPoints = $pts . " {$lastX},{$H} {$firstX},{$H}";
+                            return compact('pts', 'areaPoints', 'min', 'max');
                         };
 
-                        $tempSpark = $sparkPoints('temperature', 'var(--orange)');
-                        $humSpark  = $sparkPoints('humidity',    'var(--blue)');
+                        $tempSpark = $sparkPoints('temperature');
+                        $humSpark  = $sparkPoints('humidity');
+
+                        // 2-hour clock-time boundaries within the actual data window
+                        $axisLabels    = [];
+                        $firstBoundary = (int) ceil($startTime / 7200) * 7200; // next 2h boundary
+                        for ($t = $firstBoundary; $t <= $endTime; $t += 7200) {
+                            $axisLabels[] = [
+                                'pct'   => round(($t - $startTime) / $duration * 100, 2),
+                                'gx'    => round(($t - $startTime) / $duration * $W,  1),
+                                'label' => now()->setTimestamp($t)->format('H'),
+                            ];
+                        }
                     @endphp
 
                     <div class="graph-panel" :style="open ? 'grid-template-rows:1fr' : 'grid-template-rows:0fr'">
@@ -200,6 +221,9 @@
                                             <span class="sparkline-range">{{ $tempSpark['min'] }}° – {{ $tempSpark['max'] }}°C</span>
                                         </div>
                                         <svg viewBox="0 0 {{ $W }} {{ $H }}" preserveAspectRatio="none" class="sparkline-svg">
+                                            @foreach ($axisLabels as $lbl)
+                                                <line x1="{{ $lbl['gx'] }}" y1="0" x2="{{ $lbl['gx'] }}" y2="{{ $H }}" stroke="rgba(255,255,255,0.05)" stroke-width="0.8"/>
+                                            @endforeach
                                             <polygon points="{{ $tempSpark['areaPoints'] }}" fill="var(--orange)" fill-opacity="0.10"/>
                                             <polyline points="{{ $tempSpark['pts'] }}" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
                                         </svg>
@@ -213,6 +237,9 @@
                                             <span class="sparkline-range">{{ $humSpark['min'] }}% – {{ $humSpark['max'] }}%</span>
                                         </div>
                                         <svg viewBox="0 0 {{ $W }} {{ $H }}" preserveAspectRatio="none" class="sparkline-svg">
+                                            @foreach ($axisLabels as $lbl)
+                                                <line x1="{{ $lbl['gx'] }}" y1="0" x2="{{ $lbl['gx'] }}" y2="{{ $H }}" stroke="rgba(255,255,255,0.05)" stroke-width="0.8"/>
+                                            @endforeach
                                             <polygon points="{{ $humSpark['areaPoints'] }}" fill="var(--blue)" fill-opacity="0.10"/>
                                             <polyline points="{{ $humSpark['pts'] }}" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
                                         </svg>
@@ -223,9 +250,12 @@
                                     <div class="sparkline-empty">No data for the last 24 hours</div>
                                 @endif
 
-                                <div class="sparkline-time-labels">
-                                    <span>24h ago</span>
-                                    <span>Now</span>
+                                {{-- X-axis: actual clock hours every 2h within data range --}}
+                                <div style="position:relative; height:13px; margin-top:1px;">
+                                    @foreach ($axisLabels as $lbl)
+                                        <span style="position:absolute; left:{{ $lbl['pct'] }}%; transform:translateX(-50%); font-size:9px; color:var(--text-3); line-height:1; white-space:nowrap;">{{ $lbl['label'] }}</span>
+                                    @endforeach
+                                    <span style="position:absolute; right:0; font-size:9px; color:var(--text-3); line-height:1;">now</span>
                                 </div>
                             </div>
                         </div>
