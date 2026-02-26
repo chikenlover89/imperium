@@ -1,4 +1,4 @@
-<div wire:poll.60000ms>
+<div wire:poll.10000ms>
     {{-- Stats --}}
     <div class="stat-grid">
         <div class="stat-card" style="--accent: var(--blue)">
@@ -28,12 +28,9 @@
     {{-- Section header --}}
     <div class="section-header">
         <div class="section-title">Sensor Nodes</div>
-        <div class="last-updated"
-             x-data="{ t: '' }"
-             x-init="t = new Date().toLocaleTimeString()"
-             x-on:livewire:update.window="t = new Date().toLocaleTimeString()">
-            Updated <span x-text="t"></span>
-        </div>
+    <div class="last-updated">
+        Updated {{ $stats['updated']->format('H:i:s') }}
+    </div>
     </div>
 
     {{-- Empty state --}}
