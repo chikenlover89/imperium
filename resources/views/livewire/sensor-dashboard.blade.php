@@ -70,7 +70,7 @@
                     $lqLabel    = $lq > 0 ? "{$lq} LQI" : 'N/A';
                 @endphp
 
-                <div class="sensor-card {{ $online ? '' : 'offline' }}">
+                <div class="sensor-card {{ $online ? '' : 'offline' }}" x-data="{open:false}">
                     <div class="card-header">
                         <div class="card-meta">
                             <span class="card-id">{{ $device->model ?? 'Node #' . $device->id }}</span>
@@ -157,10 +157,78 @@
 
                         </div>
 
-                        {{-- Last seen --}}
-                        @if ($device->last_seen_at)
-                            <div class="last-seen">Last seen {{ $device->last_seen_at->diffForHumans() }}</div>
-                        @endif
+                        {{-- Last seen + toggle --}}
+                        <div class="last-seen-row">
+                            <button class="expand-btn" @click="open=!open" :class="{open:open}" title="Show 24h history">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            @if ($device->last_seen_at)
+                                <span class="last-seen">Last seen {{ $device->last_seen_at->diffForHumans() }}</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Slide-out graph panel --}}
+                    @php
+                        $h24 = $device->deviceReadings;
+                        $W = 300; $H = 44;
+
+                        $sparkPoints = function ($field, $color) use ($h24, $W, $H) {
+                            $vals = $h24->pluck($field)->filter()->values();
+                            if ($vals->count() < 2) return null;
+                            $min = $vals->min(); $max = $vals->max();
+                            $range = max($max - $min, 0.5);
+                            $n = $vals->count();
+                            $pts = $vals->map(fn($v, $i) =>
+                                round($i / ($n - 1) * $W, 1) . ',' . round($H - ($v - $min) / $range * ($H - 6) - 3, 1)
+                            )->implode(' ');
+                            $areaPoints = $pts . " {$W},{$H} 0,{$H}";
+                            return compact('pts', 'areaPoints', 'min', 'max', 'color');
+                        };
+
+                        $tempSpark = $sparkPoints('temperature', 'var(--orange)');
+                        $humSpark  = $sparkPoints('humidity',    'var(--blue)');
+                    @endphp
+
+                    <div class="graph-panel" :style="open ? 'grid-template-rows:1fr' : 'grid-template-rows:0fr'">
+                        <div style="overflow:hidden;">
+                            <div class="graph-inner">
+                                @if ($tempSpark)
+                                    <div class="sparkline-section">
+                                        <div class="sparkline-header">
+                                            <span class="sparkline-title" style="color:var(--orange)">Temperature</span>
+                                            <span class="sparkline-range">{{ $tempSpark['min'] }}° – {{ $tempSpark['max'] }}°C</span>
+                                        </div>
+                                        <svg viewBox="0 0 {{ $W }} {{ $H }}" preserveAspectRatio="none" class="sparkline-svg">
+                                            <polygon points="{{ $tempSpark['areaPoints'] }}" fill="var(--orange)" fill-opacity="0.10"/>
+                                            <polyline points="{{ $tempSpark['pts'] }}" fill="none" stroke="var(--orange)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                @endif
+
+                                @if ($humSpark)
+                                    <div class="sparkline-section">
+                                        <div class="sparkline-header">
+                                            <span class="sparkline-title" style="color:var(--blue)">Humidity</span>
+                                            <span class="sparkline-range">{{ $humSpark['min'] }}% – {{ $humSpark['max'] }}%</span>
+                                        </div>
+                                        <svg viewBox="0 0 {{ $W }} {{ $H }}" preserveAspectRatio="none" class="sparkline-svg">
+                                            <polygon points="{{ $humSpark['areaPoints'] }}" fill="var(--blue)" fill-opacity="0.10"/>
+                                            <polyline points="{{ $humSpark['pts'] }}" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                @endif
+
+                                @if (!$tempSpark && !$humSpark)
+                                    <div class="sparkline-empty">No data for the last 24 hours</div>
+                                @endif
+
+                                <div class="sparkline-time-labels">
+                                    <span>24h ago</span>
+                                    <span>Now</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             @endforeach

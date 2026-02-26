@@ -9,7 +9,13 @@ class SensorDashboard extends Component
 {
     public function render()
     {
-        $devices = Device::with('latestReading')->get();
+        $devices = Device::with([
+            'latestReading',
+            'deviceReadings' => fn($q) => $q
+                ->where('created_at', '>=', now()->subHours(24))
+                ->orderBy('created_at')
+                ->select('device_id', 'temperature', 'humidity', 'created_at'),
+        ])->get();
         $userTimezone = 'Europe/Riga';
 
         $updated = now();

@@ -179,8 +179,42 @@
 
         .divider { height: 1px; background: var(--border); }
 
-        .last-seen    { font-size: 11px; color: var(--text-3); text-align: right; }
+        .last-seen    { font-size: 11px; color: var(--text-3); flex: 1; text-align: right; }
         .last-updated { font-size: 11px; color: var(--text-3); }
+
+        .last-seen-row { display: flex; align-items: center; gap: 8px; }
+
+        .expand-btn {
+            width: 20px; height: 20px; flex-shrink: 0;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            border-radius: 5px; cursor: pointer; color: var(--text-3);
+            display: flex; align-items: center; justify-content: center;
+            padding: 0; transition: background 0.15s, color 0.15s;
+        }
+        .expand-btn:hover { background: rgba(255,255,255,0.1); color: var(--text-1); }
+        .expand-btn svg { width: 11px; height: 11px; transition: transform 0.25s ease; }
+        .expand-btn.open svg { transform: rotate(180deg); }
+
+        .graph-panel {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease;
+        }
+        .graph-inner {
+            padding: 14px 18px 16px;
+            display: flex; flex-direction: column; gap: 10px;
+            border-top: 1px solid var(--border);
+        }
+        .sparkline-section { display: flex; flex-direction: column; gap: 5px; }
+        .sparkline-header  { display: flex; align-items: center; justify-content: space-between; }
+        .sparkline-title   { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; }
+        .sparkline-range   { font-size: 10px; color: var(--text-3); }
+        .sparkline-svg     { width: 100%; height: 44px; display: block; border-radius: 4px; overflow: hidden; }
+        .sparkline-empty   { font-size: 11px; color: var(--text-3); font-style: italic; text-align: center; padding: 6px 0; }
+        .sparkline-time-labels {
+            display: flex; justify-content: space-between;
+            font-size: 10px; color: var(--text-3);
+        }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
