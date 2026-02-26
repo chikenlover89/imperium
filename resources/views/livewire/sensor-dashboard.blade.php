@@ -119,32 +119,37 @@
 
                         <div class="divider"></div>
 
-                        {{-- Battery --}}
-                        <div class="meter-row">
-                            <div class="meter-header">
-                                <div class="meter-left">
-                                    <svg class="meter-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
-                                    <span class="meter-label">Battery</span>
-                                </div>
-                                <span class="meter-value" style="color: {{ $batteryColor }}">{{ $batteryLabel }}</span>
-                            </div>
-                            <div class="meter-track">
-                                <div class="meter-fill" style="width: {{ $batteryPct }}%; background: {{ $batteryColor }}"></div>
-                            </div>
-                        </div>
+                        {{-- Battery + Signal row --}}
+                        <div style="display:flex; gap:12px; align-items:flex-end;">
 
-                        {{-- Signal --}}
-                        <div class="signal-row">
-                            <div class="signal-left">
-                                <svg class="meter-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
-                                <span class="meter-label">Signal{{ $lq > 0 ? ' (' . $lq . ')' : '' }}</span>
+                            {{-- Battery --}}
+                            <div class="meter-row" style="flex:1;">
+                                <div class="meter-header">
+                                    <div class="meter-left">
+                                        <svg class="meter-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+                                        <span class="meter-label">Battery</span>
+                                    </div>
+                                    <span class="meter-value" style="color: {{ $batteryColor }}">{{ $batteryLabel }}</span>
+                                </div>
+                                <div class="meter-track">
+                                    <div class="meter-fill" style="width: {{ $batteryPct }}%; background: {{ $batteryColor }}"></div>
+                                </div>
                             </div>
-                            <div class="signal-bars">
-                                <div class="bar {{ $bars >= 1 ? 'lit' : '' }}" style="height:4px"></div>
-                                <div class="bar {{ $bars >= 2 ? 'lit' : '' }}" style="height:6px"></div>
-                                <div class="bar {{ $bars >= 3 ? 'lit' : '' }}" style="height:9px"></div>
-                                <div class="bar {{ $bars >= 4 ? 'lit' : '' }}" style="height:12px"></div>
+
+                            {{-- Signal --}}
+                            <div class="signal-row" style="flex-shrink:0;">
+                                <div class="signal-left">
+                                    <svg class="meter-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+                                    <span class="meter-label">{{ $lq > 0 ? "{$lq} (LQI)" : '—' }}</span>
+                                </div>
+                                <div class="signal-bars" style="margin-left:6px;">
+                                    <div class="bar {{ $bars >= 1 ? 'lit' : '' }}" style="height:4px"></div>
+                                    <div class="bar {{ $bars >= 2 ? 'lit' : '' }}" style="height:6px"></div>
+                                    <div class="bar {{ $bars >= 3 ? 'lit' : '' }}" style="height:9px"></div>
+                                    <div class="bar {{ $bars >= 4 ? 'lit' : '' }}" style="height:12px"></div>
+                                </div>
                             </div>
+
                         </div>
 
                         {{-- Last seen --}}
