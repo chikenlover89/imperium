@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Device;
 use App\Models\DeviceReading;
+use App\Services\EventService;
 use Illuminate\Support\Facades\Log;
 
 class ProcessMqttMessage
@@ -98,7 +99,7 @@ class ProcessMqttMessage
             return;
         }
 
-        DeviceReading::create([
+        $reading = DeviceReading::create([
             'device_id'   => $device->id,
             'temperature' => $data['temperature'] ?? null,
             'humidity'    => $data['humidity'] ?? null,
@@ -108,5 +109,7 @@ class ProcessMqttMessage
             'raw_payload' => $data,
             'created_at'  => now(),
         ]);
+
+        app(EventService::class)->checkDeviceAlerts($device, $reading);
     }
 }
