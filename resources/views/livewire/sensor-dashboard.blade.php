@@ -264,4 +264,58 @@
             @endforeach
         </div>
     @endif
+
+    {{-- Event History --}}
+    <div class="section-header" style="margin-top:32px;">
+        <div class="section-title">Event History</div>
+    </div>
+
+    @if ($eventLogs->isEmpty())
+        <div class="empty-state">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z"/>
+            </svg>
+            <p>No events have fired yet.</p>
+        </div>
+    @else
+        <div class="event-log-list">
+            @foreach ($eventLogs as $log)
+                <div class="event-log-card {{ $log->resolved_at ? 'resolved' : '' }}" x-data="{confirming: false}">
+                    <div class="event-log-left">
+                        {{-- Resolve button / confirmed checkmark --}}
+                        @if ($log->resolved_at)
+                            <button class="resolve-btn checked" disabled title="Resolved">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                        @else
+                            <button class="resolve-btn" @click="confirming = true" title="Mark as resolved" x-show="!confirming">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                            {{-- Inline confirm --}}
+                            <div class="resolve-confirm" x-show="confirming" x-transition.duration.150ms>
+                                <span>Resolve?</span>
+                                <button class="confirm-yes" @click="confirming = false; $wire.resolveLog({{ $log->id }})">Yes</button>
+                                <button class="confirm-no"  @click="confirming = false">No</button>
+                            </div>
+                        @endif
+
+                        <div class="event-log-info">
+                            <span class="event-log-name">{{ $log->event?->name ?? 'Unknown event' }}</span>
+                            @if ($log->context)
+                                <span class="event-log-context">
+                                    @foreach ($log->context as $key => $value)
+                                        <span>{{ $key }}: {{ $value }}</span>
+                                    @endforeach
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="event-log-right">
+                        <span class="event-log-type {{ $log->event?->type }}">{{ $log->event?->type ?? '—' }}</span>
+                        <span class="event-log-time">{{ $log->occurred_at->diffForHumans() }}</span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
 </div>

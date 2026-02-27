@@ -218,6 +218,56 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* ── Event History ── */
+        .event-log-list { display: flex; flex-direction: column; gap: 6px; }
+
+        .event-log-card {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+            padding: 12px 16px; transition: opacity 0.2s;
+        }
+        .event-log-card.resolved { opacity: 0.4; }
+
+        .event-log-left  { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .event-log-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+        .resolve-btn {
+            width: 22px; height: 22px; flex-shrink: 0;
+            border-radius: 6px; border: 1.5px solid var(--border);
+            background: transparent; cursor: pointer; color: transparent;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+        }
+        .resolve-btn svg { width: 12px; height: 12px; }
+        .resolve-btn:not(.checked):hover { border-color: var(--green); color: var(--green); }
+        .resolve-btn.checked { background: var(--green); border-color: var(--green); color: #fff; cursor: default; }
+
+        .event-log-info  { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .event-log-name  { font-size: 13px; font-weight: 600; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .event-log-context { display: flex; flex-wrap: wrap; gap: 6px; }
+        .event-log-context span { font-size: 10px; color: var(--text-3); background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 4px; }
+
+        .event-log-type { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .event-log-type.device_alert { background: rgba(255,100,100,0.12); color: var(--red); }
+        .event-log-type.once         { background: rgba(100,160,255,0.12); color: var(--blue); }
+        .event-log-type.repeating    { background: rgba(255,165,0,0.12);   color: var(--orange); }
+
+        .resolve-confirm {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12px; color: var(--text-2);
+        }
+        .confirm-yes, .confirm-no {
+            padding: 2px 10px; border-radius: 5px; font-size: 11px;
+            font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+            transition: background 0.15s, color 0.15s;
+        }
+        .confirm-yes { background: var(--green); color: #fff; border-color: var(--green); }
+        .confirm-yes:hover { filter: brightness(1.15); }
+        .confirm-no  { background: transparent; color: var(--text-2); }
+        .confirm-no:hover  { background: rgba(255,255,255,0.08); }
+
+        .event-log-time { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+
         @media (max-width: 900px) {
             .stat-grid { grid-template-columns: repeat(2, 1fr); }
         }

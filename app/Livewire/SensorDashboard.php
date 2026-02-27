@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Device;
+use App\Models\EventLog;
 use Livewire\Component;
 
 class SensorDashboard extends Component
@@ -32,6 +33,18 @@ class SensorDashboard extends Component
             'updated'  => $updated,    
         ];
 
-        return view('livewire.sensor-dashboard', compact('devices', 'stats'));
+        $eventLogs = EventLog::with('event')
+            ->orderByDesc('occurred_at')
+            ->limit(30)
+            ->get();
+
+        return view('livewire.sensor-dashboard', compact('devices', 'stats', 'eventLogs'));
+    }
+
+    public function resolveLog(int $logId): void
+    {
+        EventLog::where('id', $logId)
+            ->whereNull('resolved_at')
+            ->update(['resolved_at' => now()]);
     }
 }

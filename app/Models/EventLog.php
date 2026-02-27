@@ -13,11 +13,13 @@ class EventLog extends Model
         'event_id',
         'occurred_at',
         'context',
+        'resolved_at',
     ];
 
     protected $casts = [
         'occurred_at' => 'datetime',
         'context'     => 'array',
+        'resolved_at' => 'datetime',
     ];
 
     public function event(): BelongsTo
