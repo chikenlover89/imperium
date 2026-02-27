@@ -111,7 +111,7 @@
         .empty-state p { color: var(--text-3); font-size: 13px; }
 
         /* ── Sensor grid ── */
-        .sensor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .sensor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
         .sensor-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -219,7 +219,7 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ── Event History ── */
-        .event-log-list { display: flex; flex-direction: column; gap: 6px; }
+        .event-log-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
 
         .event-log-card {
             display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -245,7 +245,7 @@
         .event-log-info  { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
         .event-log-name  { font-size: 13px; font-weight: 600; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .event-log-context { display: flex; flex-wrap: wrap; gap: 6px; }
-        .event-log-context span { font-size: 10px; color: var(--text-3); background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 4px; }
+        .event-log-context span { font-size: 10px; color: var(--text-3); padding: 1px 6px; border-radius: 4px; }
 
         .event-log-type { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.06em; }
         .event-log-type.device_alert { background: rgba(255,100,100,0.12); color: var(--red); }
