@@ -1,11 +1,6 @@
 <div wire:poll.10000ms>
     {{-- Stats --}}
     <div class="stat-grid">
-        <div class="stat-card" style="--accent: var(--blue)">
-            <div class="stat-label">Total Sensors</div>
-            <div class="stat-value" style="color: var(--text-1)">{{ $stats['total'] }}</div>
-            <div class="stat-sub">Registered nodes</div>
-        </div>
         <div class="stat-card" style="--accent: var(--green)">
             <div class="stat-label">Online</div>
             <div class="stat-value" style="color: var(--green)">{{ $stats['online'] }}</div>
@@ -15,6 +10,16 @@
             <div class="stat-label">Offline</div>
             <div class="stat-value" style="color: var(--red)">{{ $stats['offline'] }}</div>
             <div class="stat-sub">No signal</div>
+        </div>
+        <div class="stat-card" style="--accent: var(--blue)">
+            <div class="stat-label">Outside</div>
+            @if ($weather)
+                <div class="stat-value" style="color: var(--blue)">{{ round($weather['temperature_2m']) }}°</div>
+                <div class="stat-sub">{{ $weatherDesc }} · feels {{ round($weather['apparent_temperature']) }}° · {{ $weather['wind_speed_10m'] }} m/s</div>
+            @else
+                <div class="stat-value" style="color: var(--text-3)">--</div>
+                <div class="stat-sub">Weather unavailable</div>
+            @endif
         </div>
         <div class="stat-card" style="--accent: var(--orange)">
             <div class="stat-label">Avg. Temperature</div>
