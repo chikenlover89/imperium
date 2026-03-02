@@ -55,10 +55,20 @@ class ProcessMqttMessage
                 continue;
             }
 
+            $features  = collect($d['definition']['exposes'] ?? [])
+                ->pluck('name')
+                ->all();
+            $deviceType = match(true) {
+                in_array('temperature', $features)                   => 'th_sensor',
+                in_array('state', $features) && in_array('power', $features) => 'power_switch',
+                default                                              => 'unknown',
+            };
+
             Device::updateOrCreate(
                 ['ieee_address' => $d['ieee_address'] ?? null],
                 [
                     'friendly_name' => $d['friendly_name'] ?? 'Unknown',
+                    'type'          => $deviceType,
                     'model'         => $d['definition']['model'] ?? null,
                     'manufacturer'  => $d['definition']['vendor'] ?? null,
                     'description'   => $d['definition']['description'] ?? null,
@@ -93,7 +103,9 @@ class ProcessMqttMessage
         $hasSensorData = isset($data['temperature'])
             || isset($data['humidity'])
             || isset($data['battery'])
-            || isset($data['linkquality']);
+            || isset($data['linkquality'])
+            || isset($data['power'])
+            || isset($data['state']);
 
         if (!$hasSensorData) {
             return;
@@ -101,11 +113,8 @@ class ProcessMqttMessage
 
         $reading = DeviceReading::create([
             'device_id'   => $device->id,
-            'temperature' => $data['temperature'] ?? null,
-            'humidity'    => $data['humidity'] ?? null,
             'battery'     => $data['battery'] ?? null,
             'linkquality' => $data['linkquality'] ?? null,
-            'voltage'     => $data['voltage'] ?? null,
             'raw_payload' => $data,
             'created_at'  => now(),
         ]);

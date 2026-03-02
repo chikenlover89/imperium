@@ -17,7 +17,7 @@ class SensorDashboard extends Component
             'deviceReadings' => fn($q) => $q
                 ->where('created_at', '>=', now()->subHours(24))
                 ->orderBy('created_at')
-                ->select('device_id', 'temperature', 'humidity', 'created_at'),
+                ->select('device_id', 'raw_payload', 'created_at'),
         ])->get();
         $userTimezone = 'Europe/Riga';
 
@@ -29,7 +29,7 @@ class SensorDashboard extends Component
             'online'   => $devices->where('is_online', true)->count(),
             'offline'  => $devices->where('is_online', false)->count(),
             'avg_temp' => $devices
-                ->map(fn($d) => $d->latestReading?->temperature)
+                ->map(fn($d) => $d->latestReading?->raw_payload['temperature'] ?? null)
                 ->filter()
                 ->avg(),
             'updated'  => $updated,    

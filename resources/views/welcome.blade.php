@@ -218,6 +218,12 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* ── Smart plug card ── */
+        .plug-top { display: flex; align-items: flex-start; justify-content: space-between; }
+        .plug-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .plug-stat { display: flex; flex-direction: column; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+        .plug-stat-value { font-size: 16px; font-weight: 700; color: var(--text-1); }
+
         /* ── Event History ── */
         .event-log-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
 

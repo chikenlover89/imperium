@@ -17,20 +17,14 @@ class DeviceReading extends Model
 
     protected $fillable = [
         'device_id',
-        'temperature',
-        'humidity',
         'battery',
         'linkquality',
-        'voltage',
         'raw_payload',
     ];
 
     protected $casts = [
-        'temperature' => 'float',
-        'humidity'    => 'float',
         'battery'     => 'integer',
         'linkquality' => 'integer',
-        'voltage'     => 'integer',
         'raw_payload' => 'array',
         'created_at'  => 'datetime',
     ];
