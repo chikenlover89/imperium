@@ -40,6 +40,8 @@ class SensorDashboard extends Component
             ->limit(30)
             ->get();
 
+        $this->dispatch('unresolved-status', hasUnresolved: $eventLogs->whereNull('resolved_at')->isNotEmpty());
+
         $weather = Cache::remember('weather_ikskile', 900, function () {
             try {
                 $response = Http::timeout(5)->get('https://api.open-meteo.com/v1/forecast', [

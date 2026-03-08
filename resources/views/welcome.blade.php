@@ -282,9 +282,15 @@
             .content-inner { padding: 20px 16px; }
             .stat-grid { grid-template-columns: 1fr 1fr; }
         }
+
+        @keyframes pulse-alert {
+            0%, 100% { background-color: var(--bg); }
+            50%       { background-color: #1a0508; }
+        }
+        body.has-unresolved { animation: pulse-alert 2.5s ease-in-out infinite; }
     </style>
 </head>
-<body>
+<body x-data="{}" @unresolved-status.window="document.body.classList.toggle('has-unresolved', $event.detail.hasUnresolved)">
 <div class="layout">
 
     {{-- ── Main ── --}}
