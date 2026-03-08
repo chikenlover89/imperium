@@ -117,14 +117,22 @@
                                         {{ array_key_exists('power', $raw) ? number_format($raw['power'], 0) : '--' }}<span class="reading-unit">W</span>
                                     </div>
                                 </div>
-                                <button
-                                    wire:click="togglePlug({{ $device->id }})"
-                                    @click="setTimeout(() => $wire.$refresh(), 1000)"
-                                    class="status-chip {{ $stateOn ? 'online' : 'offline' }}"
-                                    style="align-self:flex-start; font-size:13px; padding:6px 14px; cursor:pointer; border:none;">
-                                    <span class="status-dot"></span>
-                                    {{ $raw['state'] ?? '--' }}
-                                </button>
+                                <div style="display:flex; gap:6px; align-items:flex-start;">
+                                    <button
+                                        wire:click="resetEnergyCounter({{ $device->id }})"
+                                        @click="setTimeout(() => $wire.$refresh(), 2000)"
+                                        style="font-size:11px; padding:6px 10px; cursor:pointer; border:1px solid var(--border); border-radius:6px; background:transparent; color:var(--text-2);">
+                                        Reset kWh
+                                    </button>
+                                    <button
+                                        wire:click="togglePlug({{ $device->id }})"
+                                        @click="setTimeout(() => $wire.$refresh(), 1000)"
+                                        class="status-chip {{ $stateOn ? 'online' : 'offline' }}"
+                                        style="font-size:13px; padding:6px 14px; cursor:pointer; border:none;">
+                                        <span class="status-dot"></span>
+                                        {{ $raw['state'] ?? '--' }}
+                                    </button>
+                                </div>
                             </div>
 
                             <div class="plug-stats">

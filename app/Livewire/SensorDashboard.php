@@ -96,6 +96,25 @@ class SensorDashboard extends Component
         }
     }
 
+    public function resetEnergyCounter(int $deviceId): void
+    {
+        $device = Device::find($deviceId);
+        if (!$device || $device->type !== 'power_switch') return;
+
+        try {
+            $mqtt = new MqttClient(
+                config('mqtt-client.connections.default.host', 'localhost'),
+                config('mqtt-client.connections.default.port', 1883),
+                'imperium-pub-' . uniqid(),
+            );
+            $mqtt->connect();
+            $mqtt->publish("zigbee2mqtt/{$device->friendly_name}/set", json_encode(['reset' => '']), 0);
+            $mqtt->disconnect();
+        } catch (\Throwable $e) {
+            Log::error('MQTT energy reset failed: ' . $e->getMessage());
+        }
+    }
+
     public function resolveLog(int $logId): void
     {
         EventLog::where('id', $logId)
