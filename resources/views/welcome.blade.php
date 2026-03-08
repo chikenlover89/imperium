@@ -294,13 +294,19 @@
         }
 
         @keyframes pulse-alert {
-            0%, 100% { background-color: var(--bg); }
-            50%       { background-color: #1a0508; }
+            0%, 100% { background: transparent; }
+            50%       { background: rgba(26,5,8,0.85); }
         }
-        body.has-unresolved { animation: pulse-alert 2.5s ease-in-out infinite; }
+        #alert-overlay {
+            position: fixed; inset: 0; z-index: 0;
+            pointer-events: none; background: transparent;
+        }
+        body.has-unresolved #alert-overlay { animation: pulse-alert 2.5s ease-in-out infinite; }
+        .layout { position: relative; z-index: 1; }
     </style>
 </head>
 <body x-data="{}" @unresolved-status.window="handleUnresolvedStatus($event.detail.hasUnresolved)">
+<div id="alert-overlay"></div>
 <div class="layout">
 
     {{-- ── Main ── --}}
