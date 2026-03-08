@@ -76,6 +76,16 @@
         .btn-login:hover { background: #2563eb; transform: translateY(-1px); }
         .btn-login svg { width: 14px; height: 14px; }
 
+        .btn-sound {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
+            background: transparent; color: var(--text-3); cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        .btn-sound:hover { background: rgba(255,255,255,0.06); color: var(--text-1); }
+        .btn-sound.active { color: var(--blue); border-color: var(--blue); }
+        .btn-sound svg { width: 16px; height: 16px; }
+
         .content-inner { padding: 28px 32px; flex: 1; }
 
         /* ── Stats ── */
@@ -290,7 +300,7 @@
         body.has-unresolved { animation: pulse-alert 2.5s ease-in-out infinite; }
     </style>
 </head>
-<body x-data="{}" @unresolved-status.window="document.body.classList.toggle('has-unresolved', $event.detail.hasUnresolved)">
+<body x-data="{}" @unresolved-status.window="handleUnresolvedStatus($event.detail.hasUnresolved)">
 <div class="layout">
 
     {{-- ── Main ── --}}
@@ -308,12 +318,23 @@
                     <span class="brand-name">IMPERIUM</span>
                 </div>
             </div>
-            <a href="/login" class="btn-login">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-                </svg>
-                Sign In
-            </a>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <button class="btn-sound" id="btn-sound" title="Toggle alert sound" onclick="toggleAlertSound()">
+                    {{-- icon swapped by JS --}}
+                    <svg id="icon-sound-on" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:none">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 6v12m0 0l-3-3m3 3l3-3M9 9H5a1 1 0 00-1 1v4a1 1 0 001 1h4l3 3V6L9 9z"/>
+                    </svg>
+                    <svg id="icon-sound-off" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/><path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+                    </svg>
+                </button>
+                <a href="/login" class="btn-login">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                    </svg>
+                    Sign In
+                </a>
+            </div>
         </div>
 
         <div class="content-inner">
@@ -324,5 +345,88 @@
     </main>
 </div>
 @livewireScripts
+<script>
+    let _audioCtx    = null;
+    let _alertLoop   = null;
+    let _pendingStart = false;
+    let _soundEnabled = localStorage.getItem('alertSound') === 'true';
+
+    function getAudioCtx() {
+        if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        return _audioCtx;
+    }
+
+    function playBeep() {
+        try {
+            const ctx = getAudioCtx();
+            [880, 660].forEach((freq, i) => {
+                const osc  = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.18);
+                gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.18);
+                gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + i * 0.18 + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.18 + 0.18);
+                osc.start(ctx.currentTime + i * 0.18);
+                osc.stop(ctx.currentTime + i * 0.18 + 0.18);
+            });
+        } catch (e) {}
+    }
+
+    function startAlertLoop() {
+        if (_alertLoop || !_soundEnabled) return;
+        playBeep();
+        _alertLoop = setInterval(playBeep, 4000);
+    }
+
+    function stopAlertLoop() {
+        clearInterval(_alertLoop);
+        _alertLoop = null;
+    }
+
+    function updateSoundButton() {
+        const btn = document.getElementById('btn-sound');
+        document.getElementById('icon-sound-on').style.display  = _soundEnabled ? '' : 'none';
+        document.getElementById('icon-sound-off').style.display = _soundEnabled ? 'none' : '';
+        btn.classList.toggle('active', _soundEnabled);
+    }
+
+    function toggleAlertSound() {
+        _soundEnabled = !_soundEnabled;
+        localStorage.setItem('alertSound', _soundEnabled);
+        updateSoundButton();
+        if (!_soundEnabled) {
+            stopAlertLoop();
+            _pendingStart = false;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', updateSoundButton);
+
+    // Warm up AudioContext on first user gesture; start loop if pending
+    document.addEventListener('click', () => {
+        getAudioCtx().resume().then(() => {
+            if (_pendingStart && _soundEnabled) { _pendingStart = false; startAlertLoop(); }
+        });
+    }, { once: true });
+
+    function handleUnresolvedStatus(hasUnresolved) {
+        document.body.classList.toggle('has-unresolved', hasUnresolved);
+        if (hasUnresolved && !_alertLoop) {
+            if (_soundEnabled) {
+                if (_audioCtx && _audioCtx.state === 'running') {
+                    startAlertLoop();
+                } else {
+                    _pendingStart = true;
+                }
+            }
+        } else if (!hasUnresolved) {
+            stopAlertLoop();
+            _pendingStart = false;
+        }
+    }
+</script>
 </body>
 </html>
