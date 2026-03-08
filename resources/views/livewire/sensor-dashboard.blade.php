@@ -369,7 +369,14 @@
                             @if ($log->context)
                                 <span class="event-log-context">
                                     @foreach ($log->context as $key => $value)
-                                        <span>{{ $key }}: {{ $value }}</span>
+                                        @php
+                                            $label   = ucwords(str_replace('_', ' ', $key));
+                                            $display = $value;
+                                            if (str_contains($key, '_at') || str_contains($key, 'date')) {
+                                                try { $display = \Carbon\Carbon::parse($value)->setTimezone('Europe/Riga')->format('Y-m-d H:i:s'); } catch (\Throwable) {}
+                                            }
+                                        @endphp
+                                        <span>{{ $label }}: {{ $display }}</span>
                                     @endforeach
                                 </span>
                             @endif
