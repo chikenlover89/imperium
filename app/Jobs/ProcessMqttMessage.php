@@ -59,8 +59,8 @@ class ProcessMqttMessage
                 ->pluck('name')
                 ->all();
             $deviceType = match(true) {
-                in_array('temperature', $features)                   => 'th_sensor',
-                in_array('state', $features) && in_array('power', $features) => 'power_switch',
+                in_array('temperature', $features) => 'th_sensor',
+                in_array('power', $features)       => 'power_switch',
                 default                                              => 'unknown',
             };
 
