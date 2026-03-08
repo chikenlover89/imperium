@@ -117,10 +117,14 @@
                                         {{ array_key_exists('power', $raw) ? number_format($raw['power'], 0) : '--' }}<span class="reading-unit">W</span>
                                     </div>
                                 </div>
-                                <span class="status-chip {{ $stateOn ? 'online' : 'offline' }}" style="align-self:flex-start; font-size:13px; padding:6px 14px;">
+                                <button
+                                    wire:click="togglePlug({{ $device->id }})"
+                                    @click="setTimeout(() => $wire.$refresh(), 1000)"
+                                    class="status-chip {{ $stateOn ? 'online' : 'offline' }}"
+                                    style="align-self:flex-start; font-size:13px; padding:6px 14px; cursor:pointer; border:none;">
                                     <span class="status-dot"></span>
                                     {{ $raw['state'] ?? '--' }}
-                                </span>
+                                </button>
                             </div>
 
                             <div class="plug-stats">

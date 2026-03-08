@@ -6,7 +6,9 @@ use App\Models\Device;
 use App\Models\EventLog;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
+use PhpMqtt\Client\MqttClient;
 
 class SensorDashboard extends Component
 {
@@ -70,6 +72,28 @@ class SensorDashboard extends Component
         $weatherDesc = $weather ? ($wmoDescriptions[$weather['weather_code'] ?? 0] ?? 'Unknown') : null;
 
         return view('livewire.sensor-dashboard', compact('devices', 'stats', 'eventLogs', 'weather', 'weatherDesc'));
+    }
+
+    public function togglePlug(int $deviceId): void
+    {
+        $device = Device::find($deviceId);
+        if (!$device || $device->type !== 'power_switch') return;
+
+        $current  = $device->latestReading?->raw_payload['state'] ?? 'OFF';
+        $newState = $current === 'ON' ? 'OFF' : 'ON';
+
+        try {
+            $mqtt = new MqttClient(
+                config('mqtt-client.connections.default.host', 'localhost'),
+                config('mqtt-client.connections.default.port', 1883),
+                'imperium-pub-' . uniqid(),
+            );
+            $mqtt->connect();
+            $mqtt->publish("zigbee2mqtt/{$device->friendly_name}/set", json_encode(['state' => $newState]), 0);
+            $mqtt->disconnect();
+        } catch (\Throwable $e) {
+            Log::error('MQTT toggle failed: ' . $e->getMessage());
+        }
     }
 
     public function resolveLog(int $logId): void
