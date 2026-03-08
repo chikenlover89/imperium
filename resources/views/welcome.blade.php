@@ -89,7 +89,7 @@
         .content-inner { padding: 28px 32px; flex: 1; }
 
         /* ── Stats ── */
-        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
         .stat-card {
             background: var(--surface);
             border: 1px solid var(--border);

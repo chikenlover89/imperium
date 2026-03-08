@@ -1,6 +1,14 @@
-<div wire:poll.10000ms>
+<div wire:poll.30000ms>
     {{-- Stats --}}
+    @php $unresolvedCount = $eventLogs->whereNull('resolved_at')->count(); @endphp
     <div class="stat-grid">
+        @if ($unresolvedCount > 0)
+            <div class="stat-card" style="--accent: var(--red); background: var(--red); border-color: var(--red);">
+                <div class="stat-label" style="color: rgba(255,255,255,0.75);">Unresolved Events</div>
+                <div class="stat-value" style="color: #fff;">{{ $unresolvedCount }}</div>
+                <div class="stat-sub" style="color: rgba(255,255,255,0.65);">Require attention</div>
+            </div>
+        @endif
         <div class="stat-card" style="--accent: var(--green)">
             <div class="stat-label">Online</div>
             <div class="stat-value" style="color: var(--green)">{{ $stats['online'] }}</div>
