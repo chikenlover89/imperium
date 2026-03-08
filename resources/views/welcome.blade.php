@@ -42,11 +42,10 @@
         }
         .brand-icon {
             width: 36px; height: 36px; border-radius: 10px;
-            background: linear-gradient(135deg, var(--blue), #6366f1);
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
-        .brand-icon svg { width: 18px; height: 18px; color: #fff; }
+        .brand-icon svg { width: 32px; height: 32px; color: #fff; }
         .brand-name { font-size: 16px; font-weight: 700; letter-spacing: 0.04em; color: var(--text-1); }
 
         /* ── Main ── */
@@ -318,7 +317,7 @@
                 <div class="brand">
                     <div class="brand-icon">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M5.43747 3L3.15175 7L5.43746 11H9.99111L12.2768 7L9.99111 3L5.43747 3ZM14.0089 6L11.4397 1.50386C11.2616 1.19229 10.9303 1 10.5714 1H4.85714C4.49829 1 4.16694 1.19229 3.9889 1.50386L1.13176 6.50386C0.956081 6.81129 0.956081 7.18871 1.13176 7.49614L3.70539 12L1.13176 16.5039C0.956081 16.8113 0.956081 17.1887 1.13176 17.4961L3.9889 22.4961C4.16694 22.8077 4.49829 23 4.85714 23H10.5714C10.9303 23 11.2616 22.8077 11.4397 22.4961L14.0089 18H19.1428C19.5017 18 19.833 17.8077 20.0111 17.4961L22.8682 12.4961C23.0439 12.1887 23.0439 11.8113 22.8682 11.5039L20.0111 6.50386C19.833 6.19229 19.5017 6 19.1428 6L14.0089 6ZM14.0089 16L11.7232 12L14.0089 8L18.5625 8L20.8482 12L18.5625 16H14.0089ZM12.2768 17L9.99111 13H5.43747L3.15175 17L5.43747 21H9.99111L12.2768 17Z" fill="#000000"/>
                         </svg>
                     </div>
                     <span class="brand-name">IMPERIUM</span>
