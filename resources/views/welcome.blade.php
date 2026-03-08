@@ -111,7 +111,7 @@
         .empty-state p { color: var(--text-3); font-size: 13px; }
 
         /* ── Sensor grid ── */
-        .sensor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
+        .sensor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; align-items: start; }
         .sensor-card {
             background: var(--surface);
             border: 1px solid var(--border);
