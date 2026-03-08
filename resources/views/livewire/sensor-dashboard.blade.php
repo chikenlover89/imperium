@@ -30,7 +30,7 @@
             @endif
         </div>
         <div class="stat-card" style="--accent: var(--orange)">
-            <div class="stat-label">Avg. Temperature</div>
+            <div class="stat-label">Average</div>
             <div class="stat-value" style="color: var(--orange)">
                 {{ $stats['avg_temp'] !== null ? number_format($stats['avg_temp'], 1) . '°' : '--' }}
             </div>
