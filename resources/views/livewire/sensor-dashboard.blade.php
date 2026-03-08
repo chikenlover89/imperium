@@ -15,7 +15,7 @@
             <div class="stat-label">Outside</div>
             @if ($weather)
                 <div class="stat-value" style="color: var(--blue)">{{ round($weather['temperature_2m']) }}°</div>
-                <div class="stat-sub">{{ $weatherDesc }} · feels {{ round($weather['apparent_temperature']) }}° · {{ $weather['wind_speed_10m'] }} m/s</div>
+                <div class="stat-sub">{{ $weatherDesc }} · {{ $weather['wind_speed_10m'] }} m/s</div>
             @else
                 <div class="stat-value" style="color: var(--text-3)">--</div>
                 <div class="stat-sub">Weather unavailable</div>
@@ -320,7 +320,7 @@
                                     @foreach ($axisLabels as $lbl)
                                         <span style="position:absolute; left:{{ $lbl['pct'] }}%; transform:translateX(-50%); font-size:9px; color:var(--text-3); line-height:1; white-space:nowrap;">{{ $lbl['label'] }}</span>
                                     @endforeach
-                                    <span style="position:absolute; right:0; font-size:9px; color:var(--text-3); line-height:1;">now</span>
+                                    <span style="position:absolute; right:0; font-size:9px; color:var(--text-3); line-height:1;"></span>
                                 </div>
                             </div>
                         </div>
