@@ -345,24 +345,22 @@
     @else
         <div class="event-log-list">
             @foreach ($eventLogs as $log)
-                <div class="event-log-card {{ $log->resolved_at ? 'resolved' : '' }}" x-data="{confirming: false}" wire:key="log-{{ $log->id }}">
+                <div class="event-log-card" :class="resolved ? 'resolved' : ''"
+                     x-data="{confirming: false, resolved: {{ $log->resolved_at ? 'true' : 'false' }}}"
+                     wire:key="log-{{ $log->id }}">
                     <div class="event-log-left">
                         {{-- Resolve button / confirmed checkmark --}}
-                        @if ($log->resolved_at)
-                            <button class="resolve-btn checked" disabled title="Resolved">
-                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            </button>
-                        @else
-                            <button class="resolve-btn" @click="confirming = true" title="Mark as resolved" x-show="!confirming">
-                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            </button>
-                            {{-- Inline confirm --}}
-                            <div class="resolve-confirm" x-show="confirming" x-transition.duration.150ms>
-                                <span>Resolve?</span>
-                                <button class="confirm-yes" @click="confirming = false; $wire.resolveLog({{ $log->id }})">Yes</button>
-                                <button class="confirm-no"  @click="confirming = false">No</button>
-                            </div>
-                        @endif
+                        <button class="resolve-btn checked" x-show="resolved" disabled title="Resolved">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </button>
+                        <button class="resolve-btn" x-show="!resolved && !confirming" @click="confirming = true" title="Mark as resolved">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </button>
+                        <div class="resolve-confirm" x-show="!resolved && confirming" x-transition.duration.150ms>
+                            <span>Resolve?</span>
+                            <button class="confirm-yes" @click="resolved = true; confirming = false; $wire.resolveLog({{ $log->id }})">Yes</button>
+                            <button class="confirm-no"  @click="confirming = false">No</button>
+                        </div>
 
                         <div class="event-log-info">
                             <span class="event-log-name">{{ $log->event?->name ?? 'Unknown event' }}</span>
