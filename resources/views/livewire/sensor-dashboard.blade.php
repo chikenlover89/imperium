@@ -345,7 +345,7 @@
     @else
         <div class="event-log-list">
             @foreach ($eventLogs as $log)
-                <div class="event-log-card {{ $log->resolved_at ? 'resolved' : '' }}" x-data="{confirming: false}">
+                <div class="event-log-card {{ $log->resolved_at ? 'resolved' : '' }}" x-data="{confirming: false}" wire:key="log-{{ $log->id }}">
                     <div class="event-log-left">
                         {{-- Resolve button / confirmed checkmark --}}
                         @if ($log->resolved_at)
