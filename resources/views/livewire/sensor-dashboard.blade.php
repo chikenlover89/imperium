@@ -118,20 +118,27 @@
                                     </div>
                                 </div>
                                 <div style="display:flex; gap:6px; align-items:flex-start;">
-                                    <button
-                                        wire:click="resetEnergyCounter({{ $device->id }})"
-                                        @click="setTimeout(() => $wire.$refresh(), 2000)"
-                                        style="font-size:11px; padding:6px 10px; cursor:pointer; border:1px solid var(--border); border-radius:6px; background:transparent; color:var(--text-2);">
-                                        Reset kWh
-                                    </button>
-                                    <button
-                                        wire:click="togglePlug({{ $device->id }})"
-                                        @click="setTimeout(() => $wire.$refresh(), 1000)"
-                                        class="status-chip {{ $stateOn ? 'online' : 'offline' }}"
-                                        style="font-size:13px; padding:6px 14px; cursor:pointer; border:none;">
-                                        <span class="status-dot"></span>
-                                        {{ $raw['state'] ?? '--' }}
-                                    </button>
+                                    @if ($isLocal)
+                                        <button
+                                            wire:click="resetEnergyCounter({{ $device->id }})"
+                                            @click="setTimeout(() => $wire.$refresh(), 2000)"
+                                            style="font-size:11px; padding:6px 10px; cursor:pointer; border:1px solid var(--border); border-radius:6px; background:transparent; color:var(--text-2);">
+                                            Reset kWh
+                                        </button>
+                                        <button
+                                            wire:click="togglePlug({{ $device->id }})"
+                                            @click="setTimeout(() => $wire.$refresh(), 1000)"
+                                            class="status-chip {{ $stateOn ? 'online' : 'offline' }}"
+                                            style="font-size:13px; padding:6px 14px; cursor:pointer; border:none;">
+                                            <span class="status-dot"></span>
+                                            {{ $raw['state'] ?? '--' }}
+                                        </button>
+                                    @else
+                                        <span class="status-chip {{ $stateOn ? 'online' : 'offline' }}" style="font-size:13px; padding:6px 14px;">
+                                            <span class="status-dot"></span>
+                                            {{ $raw['state'] ?? '--' }}
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
 
@@ -370,17 +377,23 @@
                      wire:key="log-{{ $log->id }}">
                     <div class="event-log-left">
                         {{-- Resolve button / confirmed checkmark --}}
-                        <button class="resolve-btn checked" x-show="resolved" disabled title="Resolved">
-                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                        </button>
-                        <button class="resolve-btn" x-show="!resolved && !confirming" @click="confirming = true" title="Mark as resolved">
-                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                        </button>
-                        <div class="resolve-confirm" x-show="!resolved && confirming" x-transition.duration.150ms>
-                            <span>Resolve?</span>
-                            <button class="confirm-yes" @click="resolved = true; confirming = false; $wire.resolveLog({{ $log->id }})">Yes</button>
-                            <button class="confirm-no"  @click="confirming = false">No</button>
-                        </div>
+                        @if ($isLocal)
+                            <button class="resolve-btn checked" x-show="resolved" disabled title="Resolved">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                            <button class="resolve-btn" x-show="!resolved && !confirming" @click="confirming = true" title="Mark as resolved">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                            <div class="resolve-confirm" x-show="!resolved && confirming" x-transition.duration.150ms>
+                                <span>Resolve?</span>
+                                <button class="confirm-yes" @click="resolved = true; confirming = false; $wire.resolveLog({{ $log->id }})">Yes</button>
+                                <button class="confirm-no"  @click="confirming = false">No</button>
+                            </div>
+                        @else
+                            <button class="resolve-btn checked" x-show="resolved" disabled title="Resolved">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                        @endif
 
                         <div class="event-log-info">
                             <span class="event-log-name">{{ $log->event?->name ?? 'Unknown event' }}</span>

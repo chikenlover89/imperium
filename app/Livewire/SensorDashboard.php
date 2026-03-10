@@ -71,11 +71,15 @@ class SensorDashboard extends Component
         ];
         $weatherDesc = $weather ? ($wmoDescriptions[$weather['weather_code'] ?? 0] ?? 'Unknown') : null;
 
-        return view('livewire.sensor-dashboard', compact('devices', 'stats', 'eventLogs', 'weather', 'weatherDesc'));
+        $isLocal = !request()->hasHeader('CF-Connecting-IP');
+
+        return view('livewire.sensor-dashboard', compact('devices', 'stats', 'eventLogs', 'weather', 'weatherDesc', 'isLocal'));
     }
 
     public function togglePlug(int $deviceId): void
     {
+        if (request()->hasHeader('CF-Connecting-IP')) return;
+
         $device = Device::find($deviceId);
         if (!$device || $device->type !== 'power_switch') return;
 
@@ -98,6 +102,8 @@ class SensorDashboard extends Component
 
     public function resetEnergyCounter(int $deviceId): void
     {
+        if (request()->hasHeader('CF-Connecting-IP')) return;
+
         $device = Device::find($deviceId);
         if (!$device || $device->type !== 'power_switch') return;
 
@@ -117,6 +123,8 @@ class SensorDashboard extends Component
 
     public function resolveLog(int $logId): void
     {
+        if (request()->hasHeader('CF-Connecting-IP')) return;
+
         EventLog::where('id', $logId)
             ->whereNull('resolved_at')
             ->update(['resolved_at' => now()]);
