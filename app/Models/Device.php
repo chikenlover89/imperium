@@ -42,12 +42,12 @@ class Device extends Model
     }
 
     /**
-     * True if no reading has been received in the last 60 seconds.
+     * True if no reading has been received in the last 31 minutes.
      */
     public function isStale(): bool
     {
         return $this->last_seen_at === null
-            || $this->last_seen_at->diffInSeconds(now()) > 60;
+            || $this->last_seen_at->diffInMinutes(now()) >= 31;
     }
 
     /**
