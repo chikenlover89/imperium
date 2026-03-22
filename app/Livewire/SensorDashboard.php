@@ -20,7 +20,7 @@ class SensorDashboard extends Component
                 ->where('created_at', '>=', now()->subHours(24))
                 ->orderBy('created_at')
                 ->select('device_id', 'raw_payload', 'created_at'),
-        ])->get();
+        ])->orderByDesc('type')->orderBy('friendly_name')->get();
         $userTimezone = 'Europe/Riga';
 
         $updated = now();
@@ -60,7 +60,7 @@ class SensorDashboard extends Component
         });
 
         $wmoDescriptions = [
-            0 => 'Clear sky', 1 => 'Mainly clear', 2 => 'Partly cloudy', 3 => 'Overcast',
+            0  => 'Clear sky', 1 => 'Mainly clear', 2 => 'Partly cloudy', 3 => 'Overcast',
             45 => 'Fog', 48 => 'Icy fog',
             51 => 'Light drizzle', 53 => 'Drizzle', 55 => 'Heavy drizzle',
             61 => 'Light rain', 63 => 'Rain', 65 => 'Heavy rain',
