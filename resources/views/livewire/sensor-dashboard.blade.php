@@ -64,7 +64,8 @@
                     $online  = $device->is_online;
                     $raw     = $reading?->raw_payload ?? [];
 
-                    $isPlug = $device->type === 'power_switch';
+                    $isPlug        = $device->type === 'power_switch';
+                    $isWaterSensor = $device->type === 'water_sensor';
 
                     $lq      = $raw['linkquality'] ?? 0;
                     $lqPct   = round($lq / 255 * 100);
@@ -170,6 +171,61 @@
                                 </div>
                                 <div class="meter-track">
                                     <div class="meter-fill" style="width: {{ $lqPct }}%; background: {{ $lqColor }}"></div>
+                                </div>
+                            </div>
+
+                            {{-- Last seen --}}
+                            <div class="last-seen-row">
+                                <div style="flex:1;"></div>
+                                @if ($device->last_seen_at)
+                                    <span class="last-seen">Last seen {{ $device->last_seen_at->diffForHumans() }}</span>
+                                @endif
+                            </div>
+
+                        @elseif ($isWaterSensor)
+                            {{-- ── Water Sensor layout ── --}}
+                            @php
+                                $leakDetected = (bool) ($raw['water_leak'] ?? false);
+                                $batteryLow   = (bool) ($raw['battery_low'] ?? false);
+                            @endphp
+                            <div class="leak-box {{ $leakDetected ? 'leak' : 'clear' }}">
+                                <div class="leak-icon">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3.5S5 10 5 14.5a7 7 0 0014 0C19 10 12 3.5 12 3.5z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="reading-label">Water Leak</div>
+                                    <div class="leak-value">{{ $leakDetected ? 'Leak Detected' : 'Clear' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            {{-- Battery + Signal row --}}
+                            <div style="display:flex; gap:12px; align-items:flex-end;">
+                                <div class="meter-row" style="flex:1;">
+                                    <div class="meter-header">
+                                        <div class="meter-left">
+                                            <svg class="meter-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+                                            <span class="meter-label">Battery{{ $batteryLow ? ' · Low' : '' }}</span>
+                                        </div>
+                                        <span class="meter-value" style="color: {{ $batteryLow ? 'var(--red)' : $batteryColor }}">{{ $batteryLabel }}</span>
+                                    </div>
+                                    <div class="meter-track">
+                                        <div class="meter-fill" style="width: {{ $batteryPct }}%; background: {{ $batteryLow ? 'var(--red)' : $batteryColor }}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="meter-row" style="flex:1;">
+                                    <div class="meter-header">
+                                        <div class="meter-left">
+                                            <svg class="meter-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+                                            <span class="meter-label">Signal</span>
+                                        </div>
+                                        <span class="meter-value" style="color: {{ $lqColor }}">{{ $lqLabel }}</span>
+                                    </div>
+                                    <div class="meter-track">
+                                        <div class="meter-fill" style="width: {{ $lqPct }}%; background: {{ $lqColor }}"></div>
+                                    </div>
                                 </div>
                             </div>
 

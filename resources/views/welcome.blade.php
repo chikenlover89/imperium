@@ -171,6 +171,14 @@
         .reading-unit  { font-size: 13px; font-weight: 400; color: var(--text-3); }
         .reading-stale { font-size: 12px; color: var(--text-3); font-style: italic; }
 
+        .leak-box { display: flex; align-items: center; gap: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+        .leak-box.leak { background: var(--red-dim); border-color: var(--red); }
+        .leak-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--blue-dim); color: var(--blue); }
+        .leak-box.leak .leak-icon { background: rgba(255,255,255,0.15); color: var(--red); }
+        .leak-icon svg { width: 16px; height: 16px; }
+        .leak-value { font-size: 18px; font-weight: 700; color: var(--text-1); line-height: 1.2; }
+        .leak-box.leak .leak-value { color: var(--red); }
+
         .meter-row { display: flex; flex-direction: column; gap: 6px; }
         .meter-header { display: flex; align-items: center; justify-content: space-between; }
         .meter-left { display: flex; align-items: center; gap: 6px; }
