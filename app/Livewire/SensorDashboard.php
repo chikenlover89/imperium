@@ -39,7 +39,7 @@ class SensorDashboard extends Component
 
         $eventLogs = EventLog::with('event')
             ->orderByDesc('occurred_at')
-            ->limit(30)
+            ->limit(10)
             ->get();
 
         $this->dispatch('unresolved-status', hasUnresolved: $eventLogs->whereNull('resolved_at')->isNotEmpty());
