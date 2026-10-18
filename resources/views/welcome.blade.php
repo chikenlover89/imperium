@@ -294,7 +294,7 @@
 
         @keyframes pulse-alert {
             0%, 100% { background: transparent; }
-            50%       { background: rgba(26,5,8,0.85); }
+            60%       { background: rgba(104, 14, 27, 0.85); }
         }
         #alert-overlay {
             position: fixed; inset: 0; z-index: 0;
